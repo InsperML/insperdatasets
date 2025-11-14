@@ -1,0 +1,15 @@
+[sst2]
+engine = 'huggingface'
+type = 'text'
+path = 'stanfordnlp/sst2'
+splits = ['train', 'validation', 'test']
+input = 'sentence'
+target = 'label'
+
+[imdb]
+engine = 'huggingface'
+type = 'text'
+path = 'stanfordnlp/imdb'
+splits = ['train', 'test']
+input = 'text'
+target = 'label'

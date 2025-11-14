@@ -9,7 +9,7 @@ class ListDataset(Dataset):
         X: list,
         y: list,
     ):
-        assert len(self.X) == len(self.y), "X and y must have the same length"
+        assert len(X) == len(y), "X and y must have the same length"
         self.X = X
         self.y = y
 
