@@ -1,7 +1,9 @@
 import toml
 from datasets import load_dataset
+from torch.utils.data import Dataset
 from .core.datasets import ListDataset
 from pathlib import Path
+from typing import Dict
 
 def _get_text_dataset_from_huggingface(
     dataset_info,
@@ -27,7 +29,7 @@ def _get_text_dataset_from_huggingface(
 def get_dataset(
     dataset_name,
     cache_dir=None,
-):
+) -> Dict[str, Dataset]:
     try:
         info_path = Path(__file__).parent / 'resources' / 'datasets.toml'
         with open(info_path, 'r') as f:
