@@ -2,7 +2,8 @@
 engine = 'huggingface'
 type = 'text'
 path = 'stanfordnlp/sst2'
-splits = ['train', 'validation', 'test']
+split_train = 'train'
+split_validation = 'validation'
 input = 'sentence'
 target = 'label'
 
@@ -10,6 +11,7 @@ target = 'label'
 engine = 'huggingface'
 type = 'text'
 path = 'stanfordnlp/imdb'
-splits = ['train', 'test']
+split_train = 'train'
+split_validation = 'test'
 input = 'text'
 target = 'label'

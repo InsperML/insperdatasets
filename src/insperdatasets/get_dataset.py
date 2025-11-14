@@ -11,22 +11,16 @@ def _get_text_dataset_from_huggingface(
     path = dataset_info['path']
     dataset = load_dataset(path, cache_dir=cache_dir)
     
-    for split in dataset_info['splits']:
-        if split not in dataset:
-            raise ValueError(
-                f"Split '{split}' not found in dataset '{path}'. Available splits are: {list(dataset.keys())}"
-            )
-    
-    datasets = {}
+
+    output_datasets = {}
     input_key = dataset_info['input']
     target_key = dataset_info['target']
-    for split in dataset_info['splits']:
-        data_split = dataset[split]
+    for split in ['split_train', 'split_validation']:
+        data_split = dataset[dataset_info[split]]
         X = list(data_split[input_key])
         y = list(data_split[target_key])
-        datasets[split] = ListDataset(X, y)
-
-    return datasets
+        output_datasets[split.split('_')[1]] = ListDataset(X, y)
+    return output_datasets
 
 
 
