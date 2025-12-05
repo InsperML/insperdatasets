@@ -15,3 +15,15 @@ split_train = 'train'
 split_validation = 'test'
 input = 'text'
 target = 'label'
+
+
+[arxiv2025]
+engine = 'huggingface'
+type = 'text'
+path = 'tiagoft/arxiv-cs-cl-balanced-sample-2025'
+split_train = 'train'
+split_validation = 'train'
+split_train_size = 0.8
+split_random_seed = 42
+input = 'summary'
+target = 'primary_category'

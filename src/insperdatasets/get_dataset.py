@@ -4,27 +4,48 @@ from torch.utils.data import Dataset
 from .core.datasets import ListDataset
 from pathlib import Path
 from typing import Dict
+from sklearn.model_selection import train_test_split
+
+
+def _get_dataset_split(data_split, input_key, target_key):
+    X = list(data_split[input_key])
+    y = list(data_split[target_key])
+    return X, y
+
 
 def _get_text_dataset_from_huggingface(
     dataset_info,
     cache_dir=None,
 ):
-    
+
     path = dataset_info['path']
     dataset = load_dataset(path, cache_dir=cache_dir)
-    
 
     output_datasets = {}
     input_key = dataset_info['input']
     target_key = dataset_info['target']
-    for split in ['split_train', 'split_validation']:
-        data_split = dataset[dataset_info[split]]
-        X = list(data_split[input_key])
-        y = list(data_split[target_key])
-        output_datasets[split.split('_')[1]] = ListDataset(X, y)
+
+    X, y = _get_dataset_split(dataset[dataset_info['split_train']], input_key,
+                              target_key)
+
+    if dataset_info['split_train'] == dataset_info['split_validation']:
+        X_train, X_test, y_train, y_test = train_test_split(
+            X,
+            y,
+            test_size=dataset_info['split_train_size'],
+            random_state=dataset_info['split_random_seed'],
+        )
+        X, y = X_train, y_train
+        
+    else:
+        X_test, y_test = _get_dataset_split(
+            dataset[dataset_info['split_validation']],
+            input_key,
+            target_key,
+        )
+    output_datasets['train'] = ListDataset(X, y)
+    output_datasets['validation'] = ListDataset(X_test, y_test)
     return output_datasets
-
-
 
 def get_dataset(
     dataset_name,
