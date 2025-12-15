@@ -16,6 +16,15 @@ split_validation = 'test'
 input = 'text'
 target = 'label'
 
+[agnews]
+engine = 'huggingface'
+type = 'text'
+path = 'fancyzhx/ag_news'
+split_train = 'train'
+split_validation = 'test'
+input = 'text'
+target = 'label'
+
 
 [arxiv2025]
 engine = 'huggingface'
