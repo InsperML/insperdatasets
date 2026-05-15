@@ -6,7 +6,7 @@ import soundfile as sf
 import torch
 
 
-def audio_loader(
+def load_audio(
     file_path: str | Path,
     t_start=None,
     t_end=None,

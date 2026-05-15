@@ -8,5 +8,5 @@ def test_load_audio():
     tensor, sr = utils.load_audio(audio_path)
     assert isinstance(tensor, torch.Tensor)
     assert isinstance(sr, int)
-    assert tensor.ndim == 1
-    assert sr == 16000
+    assert tensor.ndim == 2
+    assert sr == 44100
