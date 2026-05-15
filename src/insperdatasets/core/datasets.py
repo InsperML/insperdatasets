@@ -5,13 +5,12 @@ from pathlib import Path
 
 
 class ListDataset(Dataset):
-
     def __init__(
         self,
         X: list,
         y: list,
     ):
-        assert len(X) == len(y), "X and y must have the same length"
+        assert len(X) == len(y), 'X and y must have the same length'
         self.X = X
         self.y = y
 
@@ -23,15 +22,15 @@ class ListDataset(Dataset):
 
 
 class FileLoadingDataset(Dataset):
-
     def __init__(
         self,
         file_paths: list[str | Path],
         labels: list,
         loader_func: Callable[[str | Path], Any],
     ):
-        assert len(file_paths) == len(
-            labels), "file_paths and labels must have the same length"
+        assert len(file_paths) == len(labels), (
+            'file_paths and labels must have the same length'
+        )
         self.file_paths = file_paths
         self.labels = labels
         self.loader_func = loader_func
