@@ -36,7 +36,7 @@ def _read_metadata(data_dir: str | Path):
 class FMADataset(Dataset):
     def __init__(
         self,
-        data_dir: Path,
+        data_dir: str | Path,
         loader_func: Callable[[Path], Any],
     ):
         self.data = _read_metadata(data_dir)
