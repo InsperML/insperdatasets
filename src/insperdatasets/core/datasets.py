@@ -1,5 +1,7 @@
 from torch.utils.data import Dataset
 from collections.abc import Callable
+from typing import Any
+from pathlib import Path
 
 
 class ListDataset(Dataset):
@@ -24,9 +26,9 @@ class FileLoadingDataset(Dataset):
 
     def __init__(
         self,
-        file_paths: list,
+        file_paths: list[str | Path],
         labels: list,
-        loader_func: Callable,
+        loader_func: Callable[[str | Path], Any],
     ):
         assert len(file_paths) == len(
             labels), "file_paths and labels must have the same length"
