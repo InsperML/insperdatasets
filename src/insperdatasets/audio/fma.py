@@ -1,19 +1,52 @@
-from torch.utils.data import Dataset
 from collections.abc import Callable
-from typing import Any
 from pathlib import Path
+from typing import Any
+
+import pandas as pd
+from torch.utils.data import Dataset
+
+
+def _read_metadata(data_dir: str | Path):
+    data_dir = Path(data_dir)
+    metadata_file = data_dir / 'fma_metadata' / 'tracks.csv'
+
+    # Using Pandas to read the CSV file. The first 3 rows are header information.
+    # The final lines of the CSV file do not conform to the expected format and
+    # are ignored by Pandas. Setting low_memory=False to avoid dtype inference issues.
+    data = pd.read_csv(
+        metadata_file, header=None, skiprows=3, index_col=None, low_memory=False
+    )
+
+    # Take the first 3 rows as header information, concatenate the cell values
+    # to form proper column names, and set them as the DataFrame's columns.
+    header_data = pd.read_csv(metadata_file, header=None, nrows=3)
+    column_names = (
+        header_data.fillna('').astype(str).agg('_'.join, axis=0).str.strip('_').values
+    )
+    data.columns = column_names
+
+    # Construct the file paths for each track based on the 'track_id' column and the directory structure.
+    data['file_path'] = data['track_id'].map(
+        lambda x: data_dir / 'fma_full' / f'{x // 1000:03d}' / f'{x:06d}.mp3'
+    )
+
+    return data
 
 
 class FMADataset(Dataset):
     def __init__(
         self,
         data_dir: Path,
-        loader_func: Callable[[Path], Any],        
+        loader_func: Callable[[Path], Any],
     ):
-        pass
+        self.data = _read_metadata(data_dir)
+        self.loader_func = loader_func
 
     def __len__(self):
-        return 0
+        return len(self.data)
 
     def __getitem__(self, idx):
-        return None, None
+        track = self.data.iloc[idx]
+        audio_path = track['file_path']
+        audio_data = self.loader_func(audio_path)
+        return audio_data, track['label']
