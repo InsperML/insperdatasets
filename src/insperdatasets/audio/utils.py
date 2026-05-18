@@ -78,3 +78,33 @@ class PreprocessingPipeline(torch.nn.Module):
         mel = self.mel_scale(spec)
 
         return mel
+
+
+def collate_audio(batch):
+    """Collate audio tensors of variable length by zero-padding to the longest in the batch.
+
+    Returns:
+        audio: (B, C, T) tensor, zero-padded
+        mask: (B, T) bool tensor, True where the signal is real (not padding)
+        labels: list of label strings
+    """
+    audio_list, label_list = zip(*batch)
+
+    # Filter out None entries from failed loads; unpack (tensor, sr) tuples if needed
+    valid = [(a, l) for a, l in zip(audio_list, label_list) if a is not None]
+    if not valid:
+        return None, None, []
+    audio_list, label_list = zip(*valid)
+    audio_list = [a[0] if isinstance(a, (tuple, list)) else a for a in audio_list]
+
+    max_len = max(a.shape[-1] for a in audio_list)
+    padded = []
+    mask = []
+    for a in audio_list:
+        pad_len = max_len - a.shape[-1]
+        padded.append(torch.nn.functional.pad(a, (0, pad_len)))
+        m = torch.ones(max_len, dtype=torch.bool)
+        m[a.shape[-1]:] = False
+        mask.append(m)
+
+    return torch.stack(padded), torch.stack(mask), list(label_list)

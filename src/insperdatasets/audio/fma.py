@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
+import torch
 from torch.utils.data import Dataset
 
 
@@ -27,10 +28,13 @@ def _read_metadata(data_dir: str | Path):
 
     # Construct the file paths for each track based on the 'track_id' column and the directory structure.
     data['file_path'] = data['track_id'].map(
-        lambda x: data_dir / 'fma_full' / f'{x // 1000:03d}' / f'{x:06d}.mp3'
+        lambda x: data_dir / 'fma_wav16k' / f'{x // 1000:03d}' / f'{x:06d}.wav'
     )
 
     return data
+
+
+
 
 
 class FMADataset(Dataset):
@@ -48,5 +52,9 @@ class FMADataset(Dataset):
     def __getitem__(self, idx):
         track = self.data.iloc[idx]
         audio_path = track['file_path']
-        audio_data = self.loader_func(audio_path)
-        return audio_data, track['label']
+        try:
+            audio_data = self.loader_func(audio_path)
+        except Exception as e:
+            print(f"Error occurred while loading audio file {audio_path}: {e}")
+            audio_data = None
+        return audio_data, track['track_genre_top']
