@@ -8,8 +8,10 @@ import torch
 
 def load_audio(
     file_path: str | Path,
+    crop: str = 'exact',
     t_start=None,
     t_end=None,
+    t_len=None,
 ) -> Tuple[torch.Tensor, int]:
     """Load an audio file and return a PyTorch tensor and sample rate.
 
@@ -24,6 +26,24 @@ def load_audio(
 		A tuple `(audio_tensor, sample_rate)`.
 	"""
     path = Path(file_path)
+    if crop == 'random' and t_len is not None:
+        # Get the total duration of the audio file in samples
+        info = sf.info(str(path))
+        total_samples = info.frames
+
+        # Calculate the number of samples to crop
+        crop_samples = int(t_len)
+
+        if total_samples > crop_samples:
+            # Randomly select a starting point for cropping
+            start_sample = torch.randint(0, total_samples - crop_samples, (1,)).item()
+            t_start = start_sample
+            t_end = start_sample + crop_samples
+        else:
+            # If the audio is shorter than the desired length, load the whole file
+            t_start = 0
+            t_end = total_samples
+
     data, sr = sf.read(
         str(path),
         dtype="float32",

@@ -5,18 +5,17 @@ from tqdm import tqdm
 from torch.utils.data import DataLoader
 from functools import partial
 
-init_t = 15
-dur = 5
+dur = 3
 
 def main():
     dataset = fma.FMADataset(data_dir='/mnt/data3/fma/fma',
-                             loader_func=partial(audio_utils.load_audio, t_start=init_t * 44100, t_end=init_t + dur * 44100))
+                             loader_func=partial(audio_utils.load_audio, crop='random', t_len=dur*16000))
 
     print(f'We have {len(dataset)} tracks in the dataset.')
 
     dataloader = DataLoader(
         dataset,
-        batch_size=128,
+        batch_size=256,
         shuffle=True,
         num_workers=40,
         prefetch_factor=2,
@@ -32,7 +31,7 @@ def main():
         # Here you can add code to process the audio_data and label as needed.
         # For example, you could print the shape of the audio data and the label:
         #print(f'Track {i}: Audio data shape: {audio_data.shape}, Label: {label}')
-
+    print(audio_data.shape, mask.shape, label[:10])
 
 if __name__ == "__main__":
     main()
