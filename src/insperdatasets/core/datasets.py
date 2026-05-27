@@ -1,7 +1,9 @@
-from torch.utils.data import Dataset
 from collections.abc import Callable
-from typing import Any
 from pathlib import Path
+from typing import Any
+
+import torch
+from torch.utils.data import Dataset, Subset
 
 
 class ListDataset(Dataset):
@@ -42,3 +44,12 @@ class FileLoadingDataset(Dataset):
         data = self.loader_func(self.file_paths[idx])
         label = self.labels[idx]
         return data, label
+
+
+def get_random_subset(dataset: Dataset, n_samples: int) -> Dataset:
+    """Return a random subset of the given dataset with n_samples."""
+    assert hasattr(dataset, '__len__'), 'Dataset must have a __len__ method'
+    total_samples = len(dataset)  # type: ignore
+
+    random_indices = torch.randint(0, total_samples, (n_samples,))
+    return Subset(dataset, random_indices.tolist())
