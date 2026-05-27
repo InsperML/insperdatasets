@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
-import torch
 from torch.utils.data import Dataset
 
 
@@ -34,9 +33,6 @@ def _read_metadata(data_dir: str | Path):
     return data
 
 
-
-
-
 class FMADataset(Dataset):
     def __init__(
         self,
@@ -55,6 +51,6 @@ class FMADataset(Dataset):
         try:
             audio_data = self.loader_func(audio_path)
         except Exception as e:
-            print(f"Error occurred while loading audio file {audio_path}: {e}")
+            print(f'Error occurred while loading audio file {audio_path}: {e}')
             audio_data = None
         return audio_data, track['track_genre_top']
